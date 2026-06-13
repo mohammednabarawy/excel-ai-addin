@@ -33,10 +33,12 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
   const [isFetchingModels, setIsFetchingModels] = useState(false);
   const [availableOpenCodeModels, setAvailableOpenCodeModels] = useState<{id: string, name: string}[]>([]);
   const [isFetchingOpenCodeModels, setIsFetchingOpenCodeModels] = useState(false);
+  const [openCodeError, setOpenCodeError] = useState('');
 
   const fetchOpenCodeModels = async () => {
     if (!settings.opencodeApiKey) return;
     setIsFetchingOpenCodeModels(true);
+    setOpenCodeError('');
     try {
       const response = await fetch(`https://opencode.ai/zen/v1/models`, {
         headers: { 'Authorization': `Bearer ${settings.opencodeApiKey}` }
@@ -54,9 +56,16 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
         if (models.length > 0 && (!settings.opencodeModel || settings.opencodeModel === 'minimax-m2.5-free')) {
           setSettings({ ...settings, opencodeModel: models[0].id });
         }
+      } else {
+         setOpenCodeError('Invalid response format from OpenCode');
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error('Failed to fetch OpenCode models', e);
+      if (e.message?.includes('Failed to fetch')) {
+        setOpenCodeError('CORS Error: OpenCode blocked the request. This usually means your API Key is invalid or missing billing details.');
+      } else {
+        setOpenCodeError(e.message || 'Unknown error fetching models');
+      }
     } finally {
       setIsFetchingOpenCodeModels(false);
     }
@@ -176,6 +185,11 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
               {isFetchingOpenCodeModels ? 'Loading...' : 'Load Models'}
             </Button>
           </div>
+          {openCodeError && (
+            <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
+              {openCodeError}
+            </div>
+          )}
         </>
       )}
 

@@ -105,11 +105,19 @@ export const sendToAI = async (
     body.model = settings.opencodeModel || 'minimax-m2.5-free';
   }
 
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body)
-  });
+  let res;
+  try {
+    res = await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body)
+    });
+  } catch (e: any) {
+    if (settings.provider === 'opencode' && e.message?.includes('Failed to fetch')) {
+      throw new Error("CORS Error: OpenCode blocked the connection. This usually happens when your OpenCode account is out of credits, has no payment method, or the Free Promotion has ended. Please check your OpenCode dashboard.");
+    }
+    throw e;
+  }
 
   if (!res.ok) {
     let errorDetail = res.statusText;
