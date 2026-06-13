@@ -79,7 +79,8 @@ export const sendToAI = async (
     endpoint = `${settings.lmStudioUrl}/chat/completions`;
     body.model = settings.lmStudioModel || "local-model";
   } else if (settings.provider === 'gemini') {
-    endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${settings.geminiApiKey}`;
+    const model = settings.geminiModel || 'gemini-1.5-pro-latest';
+    endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${settings.geminiApiKey}`;
     body = {
       system_instruction: { parts: { text: systemPrompt } },
       contents: [

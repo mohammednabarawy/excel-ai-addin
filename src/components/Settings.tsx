@@ -29,6 +29,30 @@ interface SettingsProps {
 export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
   const styles = useStyles();
   const [settings, setSettings] = useState<AppSettings>(loadSettings());
+  const [availableModels, setAvailableModels] = useState<string[]>([]);
+  const [isFetchingModels, setIsFetchingModels] = useState(false);
+
+  const fetchGeminiModels = async () => {
+    if (!settings.geminiApiKey) return;
+    setIsFetchingModels(true);
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${settings.geminiApiKey}`);
+      const data = await response.json();
+      if (data.models) {
+        const models = data.models
+          .filter((m: any) => m.supportedGenerationMethods?.includes('generateContent'))
+          .map((m: any) => m.name.replace('models/', ''));
+        setAvailableModels(models);
+        if (models.length > 0 && !settings.geminiModel) {
+          setSettings({ ...settings, geminiModel: models[0] });
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch models', e);
+    } finally {
+      setIsFetchingModels(false);
+    }
+  };
 
   const handleSave = () => {
     saveSettings(settings);
@@ -68,13 +92,32 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
       )}
 
       {settings.provider === 'gemini' && (
-        <Field label="Google Gemini API Key">
-          <Input 
-            type="password"
-            value={settings.geminiApiKey} 
-            onChange={(_, data) => setSettings({ ...settings, geminiApiKey: data.value })}
-          />
-        </Field>
+        <>
+          <Field label="Google Gemini API Key">
+            <Input 
+              type="password"
+              value={settings.geminiApiKey} 
+              onChange={(_, data) => setSettings({ ...settings, geminiApiKey: data.value })}
+            />
+          </Field>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+            <Field label="Gemini Model" style={{ flex: 1 }}>
+              <Select 
+                value={settings.geminiModel || 'gemini-1.5-pro-latest'} 
+                onChange={(_, data) => setSettings({ ...settings, geminiModel: data.value })}
+              >
+                {availableModels.length > 0 ? (
+                  availableModels.map(m => <option key={m} value={m}>{m}</option>)
+                ) : (
+                  <option value={settings.geminiModel || 'gemini-1.5-pro-latest'}>{settings.geminiModel || 'gemini-1.5-pro-latest'}</option>
+                )}
+              </Select>
+            </Field>
+            <Button onClick={fetchGeminiModels} disabled={!settings.geminiApiKey || isFetchingModels}>
+              {isFetchingModels ? 'Loading...' : 'Load Models'}
+            </Button>
+          </div>
+        </>
       )}
 
       {settings.provider === 'opencode' && (

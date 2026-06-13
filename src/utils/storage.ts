@@ -1,6 +1,7 @@
 export interface AppSettings {
   provider: 'gemini' | 'lmstudio' | 'opencode';
   geminiApiKey: string;
+  geminiModel?: string;
   lmStudioUrl: string;
   lmStudioModel?: string;
   opencodeApiKey: string;
@@ -9,6 +10,7 @@ export interface AppSettings {
 const DEFAULT_SETTINGS: AppSettings = {
   provider: 'lmstudio',
   geminiApiKey: '',
+  geminiModel: 'gemini-1.5-pro-latest',
   lmStudioUrl: 'http://localhost:1234/v1',
   lmStudioModel: 'local-model',
   opencodeApiKey: '',
