@@ -1,5 +1,6 @@
 import type { AppSettings } from './storage';
 import type { ExcelContextInfo } from './excelContext';
+import { jsonrepair } from 'jsonrepair';
 
 export interface AIResponse {
   actionType: 'clarification' | 'edit' | 'destructive_edit' | 'read_more_data';
@@ -25,25 +26,34 @@ Rules:
 2. If the user's request is ambiguous, reply with a clarifying question. Set actionType to "clarification".
 3. If the request involves destructive actions, set actionType to "destructive_edit".
 4. For normal edits, set actionType to "edit" and provide the exact "rangeAddress" indicating where to place the "values". Always include the sheet name in the address (e.g. "Sheet2!A1"). Note: You only need to provide the top-left cell; the add-in will automatically resize the range to perfectly fit the dimensions of your provided "values" array. DO NOT use markdown like **bold** in the cell values! To format cells, use the "format" object.
-5. The "format" object supports: { "bold": true, "italic": true, "backgroundColor": "#FFFF00", "fontColor": "#FF0000", "horizontalAlignment": "Center" | "Left" | "Right", "numberFormat": "0.00%" | "$#,##0.00" | etc, "convertToTable": true }. Only include properties you want to change. If convertToTable is true, the range will be converted to a native Excel Table.
+5. The "format" object supports: { "bold": true, "italic": true, "backgroundColor": "#FFFF00", "fontColor": "#FF0000", "horizontalAlignment": "Center" | "Left" | "Right", "numberFormat": "0.00%" | "$#,##0.00" | etc, "convertToTable": true }. Only include properties you want to change. If convertToTable is true, the range will be converted to a native Excel Table. IMPORTANT: When applying a professional format or table, you must also consistently apply "numberFormat" to any columns that represent currency, percentages, or dates.
 6. Output must be valid JSON: { "actionType": "clarification" | "edit" | "destructive_edit" | "read_more_data", "messageToUser": "string", "proposedChanges": { "rangeAddress": "string", "values": [[]], "format": {} } }`;
 };
 
 const extractJSON = (text: string) => {
+  let repairedText = text;
   try {
-    return JSON.parse(text);
+    repairedText = jsonrepair(text);
+  } catch(e) {}
+
+  try {
+    return JSON.parse(repairedText);
   } catch (e) {
-    const match = text.match(/```(?:json)?\n?([\s\S]*?)\n?```/i);
+    const match = repairedText.match(/```(?:json)?\n?([\s\S]*?)\n?```/i);
     if (match) {
-      try { return JSON.parse(match[1]); } catch(err) {}
+      try { 
+        const repairedMatch = jsonrepair(match[1]);
+        return JSON.parse(repairedMatch); 
+      } catch(err) {}
     }
     
     // Attempt to extract raw JSON block if no markdown was used but there is text around it
-    const firstBrace = text.indexOf('{');
-    const lastBrace = text.lastIndexOf('}');
+    const firstBrace = repairedText.indexOf('{');
+    const lastBrace = repairedText.lastIndexOf('}');
     if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
       try {
-        return JSON.parse(text.substring(firstBrace, lastBrace + 1));
+        const repairedBlock = jsonrepair(repairedText.substring(firstBrace, lastBrace + 1));
+        return JSON.parse(repairedBlock);
       } catch(err) {}
     }
     
