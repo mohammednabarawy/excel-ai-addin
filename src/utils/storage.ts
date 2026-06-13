@@ -5,6 +5,7 @@ export interface AppSettings {
   lmStudioUrl: string;
   lmStudioModel?: string;
   opencodeApiKey: string;
+  opencodeModel?: string;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -14,6 +15,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   lmStudioUrl: 'http://localhost:1234/v1',
   lmStudioModel: 'local-model',
   opencodeApiKey: '',
+  opencodeModel: 'minimax-m2.5-free',
 };
 
 export const loadSettings = (): AppSettings => {

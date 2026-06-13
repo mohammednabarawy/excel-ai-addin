@@ -31,6 +31,36 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
   const [settings, setSettings] = useState<AppSettings>(loadSettings());
   const [availableModels, setAvailableModels] = useState<string[]>([]);
   const [isFetchingModels, setIsFetchingModels] = useState(false);
+  const [availableOpenCodeModels, setAvailableOpenCodeModels] = useState<{id: string, name: string}[]>([]);
+  const [isFetchingOpenCodeModels, setIsFetchingOpenCodeModels] = useState(false);
+
+  const fetchOpenCodeModels = async () => {
+    if (!settings.opencodeApiKey) return;
+    setIsFetchingOpenCodeModels(true);
+    try {
+      const response = await fetch(`https://opencode.ai/zen/v1/models`, {
+        headers: { 'Authorization': `Bearer ${settings.opencodeApiKey}` }
+      });
+      const data = await response.json();
+      if (data.data) {
+        const models = data.data.map((m: any) => {
+          const isFree = m.id.toLowerCase().includes('free');
+          return {
+            id: m.id,
+            name: isFree ? `${m.id} (Free)` : m.id
+          };
+        });
+        setAvailableOpenCodeModels(models);
+        if (models.length > 0 && (!settings.opencodeModel || settings.opencodeModel === 'minimax-m2.5-free')) {
+          setSettings({ ...settings, opencodeModel: models[0].id });
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch OpenCode models', e);
+    } finally {
+      setIsFetchingOpenCodeModels(false);
+    }
+  };
 
   const fetchGeminiModels = async () => {
     if (!settings.geminiApiKey) return;
@@ -121,13 +151,32 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
       )}
 
       {settings.provider === 'opencode' && (
-        <Field label="OpenCode Zen Key (optional)">
-          <Input 
-            type="password"
-            value={settings.opencodeApiKey} 
-            onChange={(_, data) => setSettings({ ...settings, opencodeApiKey: data.value })}
-          />
-        </Field>
+        <>
+          <Field label="OpenCode Zen Key (optional)">
+            <Input 
+              type="password"
+              value={settings.opencodeApiKey} 
+              onChange={(_, data) => setSettings({ ...settings, opencodeApiKey: data.value })}
+            />
+          </Field>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+            <Field label="OpenCode Model" style={{ flex: 1 }}>
+              <Select 
+                value={settings.opencodeModel || 'minimax-m2.5-free'} 
+                onChange={(_, data) => setSettings({ ...settings, opencodeModel: data.value })}
+              >
+                {availableOpenCodeModels.length > 0 ? (
+                  availableOpenCodeModels.map(m => <option key={m.id} value={m.id}>{m.name}</option>)
+                ) : (
+                  <option value={settings.opencodeModel || 'minimax-m2.5-free'}>{settings.opencodeModel || 'minimax-m2.5-free'}</option>
+                )}
+              </Select>
+            </Field>
+            <Button onClick={fetchOpenCodeModels} disabled={!settings.opencodeApiKey || isFetchingOpenCodeModels}>
+              {isFetchingOpenCodeModels ? 'Loading...' : 'Load Models'}
+            </Button>
+          </div>
+        </>
       )}
 
       <Button appearance="primary" onClick={handleSave}>Save & Close</Button>

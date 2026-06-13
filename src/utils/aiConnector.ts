@@ -100,9 +100,9 @@ export const sendToAI = async (
       generationConfig: { response_mime_type: "application/json" }
     };
   } else if (settings.provider === 'opencode') {
-    endpoint = 'https://zen.opencode.ai/v1/chat/completions';
+    endpoint = 'https://opencode.ai/zen/v1/chat/completions';
     headers['Authorization'] = `Bearer ${settings.opencodeApiKey}`;
-    body.model = 'minimax-m2.5-free';
+    body.model = settings.opencodeModel || 'minimax-m2.5-free';
   }
 
   const res = await fetch(endpoint, {
