@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp 
+  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" 
+  xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+  xsi:type="TaskPaneApp">
+  <Id>b73d22b0-8c9e-4ebf-818a-f5e977c088c4</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Antigravity AI</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Antigravity Excel AI"/>
+  <Description DefaultValue="Serverless AI assistant for Excel"/>
+  <IconUrl DefaultValue="https://developer.microsoft.com/en-us/microsoft-365/common/images/microsoft-365-icon-small.png"/>
+  <SupportUrl DefaultValue="https://github.com/mohammednabarawy/excel-ai-addin"/>
+  <AppDomains>
+    <AppDomain>mohammednabarawy.github.io</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Workbook" />
+  </Hosts>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://mohammednabarawy.github.io/excel-ai-addin/index.html"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+</OfficeApp>
