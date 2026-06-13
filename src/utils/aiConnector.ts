@@ -100,7 +100,8 @@ export const sendToAI = async (
       generationConfig: { response_mime_type: "application/json" }
     };
   } else if (settings.provider === 'opencode') {
-    endpoint = 'https://opencode.ai/zen/v1/chat/completions';
+    const targetUrl = 'https://opencode.ai/zen/v1/chat/completions';
+    endpoint = settings.opencodeUseProxy ? `https://corsproxy.io/?${encodeURIComponent(targetUrl)}` : targetUrl;
     headers['Authorization'] = `Bearer ${settings.opencodeApiKey}`;
     body.model = settings.opencodeModel || 'minimax-m2.5-free';
   }

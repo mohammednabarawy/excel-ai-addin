@@ -4,6 +4,7 @@ import {
   Input, 
   Select, 
   Field, 
+  Checkbox,
   makeStyles,
   tokens
 } from '@fluentui/react-components';
@@ -40,7 +41,9 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
     setIsFetchingOpenCodeModels(true);
     setOpenCodeError('');
     try {
-      const response = await fetch(`https://opencode.ai/zen/v1/models`, {
+      const targetUrl = `https://opencode.ai/zen/v1/models`;
+      const url = settings.opencodeUseProxy ? `https://corsproxy.io/?${encodeURIComponent(targetUrl)}` : targetUrl;
+      const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${settings.opencodeApiKey}` }
       });
       const data = await response.json();
@@ -168,6 +171,11 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
               onChange={(_, data) => setSettings({ ...settings, opencodeApiKey: data.value })}
             />
           </Field>
+          <Checkbox 
+            label="Use public CORS proxy (Bypasses CORS errors, but sends traffic through corsproxy.io)"
+            checked={!!settings.opencodeUseProxy}
+            onChange={(_, data) => setSettings({ ...settings, opencodeUseProxy: !!data.checked })}
+          />
           <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
             <Field label="OpenCode Model" style={{ flex: 1 }}>
               <Select 

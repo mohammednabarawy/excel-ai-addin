@@ -6,6 +6,7 @@ export interface AppSettings {
   lmStudioModel?: string;
   opencodeApiKey: string;
   opencodeModel?: string;
+  opencodeUseProxy?: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -16,6 +17,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   lmStudioModel: 'local-model',
   opencodeApiKey: '',
   opencodeModel: 'minimax-m2.5-free',
+  opencodeUseProxy: false,
 };
 
 export const loadSettings = (): AppSettings => {
