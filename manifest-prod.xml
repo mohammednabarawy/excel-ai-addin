@@ -7,9 +7,9 @@
   xsi:type="TaskPaneApp">
   <Id>b73d22b0-8c9e-4ebf-818a-f5e977c088c4</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Antigravity AI</ProviderName>
+  <ProviderName>Excel AI</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Antigravity Excel AI"/>
+  <DisplayName DefaultValue="Excel AI"/>
   <Description DefaultValue="Serverless AI assistant for Excel"/>
   <IconUrl DefaultValue="https://developer.microsoft.com/en-us/microsoft-365/common/images/microsoft-365-icon-small.png"/>
   <SupportUrl DefaultValue="https://github.com/mohammednabarawy/excel-ai-addin"/>

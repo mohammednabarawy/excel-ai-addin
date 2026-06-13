@@ -104,6 +104,17 @@ export const sendToAI = async (
     endpoint = settings.opencodeUseProxy ? `https://corsproxy.io/?${encodeURIComponent(targetUrl)}` : targetUrl;
     headers['Authorization'] = `Bearer ${settings.opencodeApiKey}`;
     body.model = settings.opencodeModel || 'minimax-m2.5-free';
+  } else if (settings.provider === 'custom') {
+    const targetUrl = settings.customBaseUrl ? 
+      (settings.customBaseUrl.endsWith('/chat/completions') ? settings.customBaseUrl : `${settings.customBaseUrl.replace(/\/$/, '')}/chat/completions`) 
+      : '';
+    endpoint = settings.customUseProxy ? `https://corsproxy.io/?${encodeURIComponent(targetUrl)}` : targetUrl;
+    if (settings.customApiKey) {
+      headers['Authorization'] = `Bearer ${settings.customApiKey}`;
+    }
+    if (settings.customModel) {
+      body.model = settings.customModel;
+    }
   }
 
   let res;
@@ -114,8 +125,8 @@ export const sendToAI = async (
       body: JSON.stringify(body)
     });
   } catch (e: any) {
-    if (settings.provider === 'opencode' && e.message?.includes('Failed to fetch')) {
-      throw new Error("CORS Error: OpenCode blocked the connection. This usually happens when your OpenCode account is out of credits, has no payment method, or the Free Promotion has ended. Please check your OpenCode dashboard.");
+    if ((settings.provider === 'opencode' || settings.provider === 'custom') && e.message?.includes('Failed to fetch')) {
+      throw new Error(`CORS Error: The provider blocked the connection. This usually happens due to missing billing details or an invalid API Key. Try enabling the 'Use public CORS proxy' setting for this provider.`);
     }
     throw e;
   }

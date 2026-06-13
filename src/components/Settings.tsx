@@ -113,6 +113,7 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
           <option value="lmstudio">Local LM Studio</option>
           <option value="gemini">Google Gemini API</option>
           <option value="opencode">OpenCode Zen</option>
+          <option value="custom">Custom (OpenAI Compatible)</option>
         </Select>
       </Field>
 
@@ -198,6 +199,43 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
               {openCodeError}
             </div>
           )}
+        </>
+      )}
+
+      {settings.provider === 'custom' && (
+        <>
+          <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+            <strong>Free Tier Tips:</strong><br/>
+            • <strong>Groq:</strong> https://api.groq.com/openai/v1<br/>
+            • <strong>OpenRouter:</strong> https://openrouter.ai/api/v1<br/>
+            • <strong>Together AI:</strong> https://api.together.xyz/v1
+          </div>
+          <Field label="Custom Base URL">
+            <Input 
+              value={settings.customBaseUrl} 
+              placeholder="https://api.groq.com/openai/v1"
+              onChange={(_, data) => setSettings({ ...settings, customBaseUrl: data.value })}
+            />
+          </Field>
+          <Field label="Custom API Key">
+            <Input 
+              type="password"
+              value={settings.customApiKey} 
+              onChange={(_, data) => setSettings({ ...settings, customApiKey: data.value })}
+            />
+          </Field>
+          <Field label="Custom Model ID">
+            <Input 
+              value={settings.customModel || ''} 
+              placeholder="llama3-70b-8192"
+              onChange={(_, data) => setSettings({ ...settings, customModel: data.value })}
+            />
+          </Field>
+          <Checkbox 
+            label="Use public CORS proxy (Bypasses CORS errors, routes through corsproxy.io)"
+            checked={!!settings.customUseProxy}
+            onChange={(_, data) => setSettings({ ...settings, customUseProxy: !!data.checked })}
+          />
         </>
       )}
 

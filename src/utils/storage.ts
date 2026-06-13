@@ -1,5 +1,5 @@
 export interface AppSettings {
-  provider: 'gemini' | 'lmstudio' | 'opencode';
+  provider: 'gemini' | 'lmstudio' | 'opencode' | 'custom';
   geminiApiKey: string;
   geminiModel?: string;
   lmStudioUrl: string;
@@ -7,6 +7,10 @@ export interface AppSettings {
   opencodeApiKey: string;
   opencodeModel?: string;
   opencodeUseProxy?: boolean;
+  customBaseUrl: string;
+  customApiKey: string;
+  customModel?: string;
+  customUseProxy?: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -18,6 +22,10 @@ const DEFAULT_SETTINGS: AppSettings = {
   opencodeApiKey: '',
   opencodeModel: 'minimax-m2.5-free',
   opencodeUseProxy: false,
+  customBaseUrl: '',
+  customApiKey: '',
+  customModel: '',
+  customUseProxy: false,
 };
 
 export const loadSettings = (): AppSettings => {

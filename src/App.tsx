@@ -32,7 +32,7 @@ function App() {
   return (
     <div className={styles.appContainer}>
       <div className={styles.header}>
-        <span style={{ fontWeight: 600 }}>Antigravity AI</span>
+        <span style={{ fontWeight: 600 }}>Excel AI</span>
         {view === 'chat' && (
           <Button 
             appearance="transparent" 
