@@ -1,6 +1,14 @@
 # Excel AI
 
+<div align="center">
+  <img src="public/excel_ai_logo.png" alt="Excel AI Logo" width="128" />
+</div>
+
 **Excel AI** is a powerful, serverless Artificial Intelligence assistant that integrates directly into Microsoft Excel. It allows you to chat with your data, apply professional formatting, and perform complex data analysis using your favorite AI models without ever leaving your spreadsheet.
+
+<div align="center">
+  <img src="public/excel_ai_screenshot.png" alt="Excel AI Screenshot" width="800" />
+</div>
 
 ## Features
 
